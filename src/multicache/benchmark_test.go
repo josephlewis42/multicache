@@ -78,35 +78,56 @@ func TestOptimal(t *testing.T) {
 	}
 }
 
-type NormalTestcase struct {
-	items          []string
-	cacheSize      uint64
-	expectedResult float64
+// We're just testing that this function works, so we use a basic known
+// algorithm rather than something more complex. The algorithms themselves are
+// tested in their respective testing functions.
+
+type FullTestcase struct {
+	items           []string
+	cacheSize       uint64
+	algorithm       ReplacementAlgorithm
+	expectedResult  float64
+	expectedOptimal float64
 }
 
-//
-// // This function will find the cache items that are going to be replaced farthest
-// // in the future
-// func furthestFunc(tmpIndex int, cache *map[string]bool, items *[]string) string {
-//
-// 	// Holds all the items in the cache
-// 	cacheCopy := make(map[string]bool)
-// 	for key, held := range *cache {
-// 		if held == true {
-// 			cacheCopy[key] = true
-// 		}
-// 	}
-// 	// scan the list of items, removing each until we reach the end of the
-// 	// list, or we get the item used farthest in the future.
-// 	for ; tmpIndex < len(*items) || len(cacheCopy) == 1; tmpIndex++ {
-// 		usedItem := (*items)[tmpIndex]
-// 		delete(cacheCopy, usedItem)
-// 	}
-//
-// 	// Return an item in the map
-// 	for k, _ := range cacheCopy {
-// 		return k
-// 	}
-//
-// 	fatal("no items in cache")
-// }
+// We use the same testcases as the optimal to make sure it comes out right too
+var hitmissTestcases = []FullTestcase{
+	// Nothing in cache, = 0
+	{[]string{}, 0, &RoundRobin{}, 0.0, 0.0},
+	// cache all misses
+	{[]string{"a", "b"}, 42, &RoundRobin{}, 0.0, 0.0},
+	// don't replace the b optimally, it'll never be used again
+	{[]string{"a", "b", "a"}, 1, &RoundRobin{}, 0.0, 0},
+	// Hit twice
+	{[]string{"a", "b", "a", "a"}, 2, &RoundRobin{}, 0.5, 0.5},
+	// randomly generated, these calculations are for round robin
+	{[]string{"3", // Miss, (3)
+		"3",  // Hit,  	(3)
+		"3",  // Hit,  	(3)
+		"2",  // Miss, 	(3,2)
+		"1",  // Miss, 	(1, 2)
+		"1",  // Hit,  	(1, 2)
+		"2",  // Hit,  	(1, 2)
+		"3",  // Miss, 	(3, 1)
+		"1",  // Hit,  	(3, 1)
+		"1",  // Hit, 	(3, 1)
+		"3",  // Hit, 	(3, 1)
+		"2",  // Miss,	(2, 3)
+		"1",  // Miss, 	(1, 2)
+		"3",  // Miss, 	(3, 1)
+		"1"}, // Hit, 	(3, 1)
+		2, &RoundRobin{}, 8.0 / 15.0, 9.0 / 15.0}}
+
+func TestCalculateHitMiss(t *testing.T) {
+	for index, test := range hitmissTestcases {
+		result, optimal := CalculateHitMiss(test.items, test.cacheSize, test.algorithm)
+
+		if result != test.expectedResult {
+			t.Error("Unexpected result, index:", index, "result:", result, "testcase:", test)
+		}
+
+		if optimal != test.expectedOptimal {
+			t.Error("Unexpected result, index:", index, "optimal_result:", optimal, "testcase:", test)
+		}
+	}
+}

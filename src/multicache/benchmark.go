@@ -8,13 +8,6 @@ Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
 Licensed under the MIT license
 **/
 
-type HitMissTester struct {
-	hits   int
-	misses int
-	items  []string
-	mc     MultiCache
-}
-
 /** Given a list of strings, calculates the hit/miss ratio for a given algorithm
 and cache size.
 
