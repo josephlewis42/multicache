@@ -1,6 +1,9 @@
 package multicache
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
 /**
 This file is part of go-multicache, a library for handling caches with multiple
@@ -9,6 +12,10 @@ keys and replacement algorithms.
 Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
 Licensed under the MIT license
 **/
+
+var (
+	InvalidSizeError = errors.New("Invalid size passed to the cache")
+)
 
 type Multicache struct {
 	kvStore         map[string]*MulticacheItem
@@ -21,7 +28,7 @@ type Multicache struct {
 
 // Creates a new multicache that can hold the given number of items.
 // The default algorithm used is SecondChance
-func NewDefaultMulticache(numItems uint64) *Multicache {
+func NewDefaultMulticache(numItems uint64) (*Multicache, error) {
 	var defaultAlgorithm SecondChance
 	return NewMulticache(numItems, &defaultAlgorithm)
 }
@@ -29,7 +36,11 @@ func NewDefaultMulticache(numItems uint64) *Multicache {
 // Creates a multicache that can hold the given number of items using the given
 // replacement algorithm. You should use CalculateHitMiss to look for the best
 // ReplacementAlgorithm for your specific data.
-func NewMulticache(numItems uint64, algorithm ReplacementAlgorithm) *Multicache {
+func NewMulticache(numItems uint64, algorithm ReplacementAlgorithm) (*Multicache, error) {
+	if numItems == 0 {
+		return nil, InvalidSizeError
+	}
+
 	var mc Multicache
 	mc.kvStore = make(map[string]*MulticacheItem)
 	mc.itemList = make([]*MulticacheItem, numItems)
@@ -44,7 +55,7 @@ func NewMulticache(numItems uint64, algorithm ReplacementAlgorithm) *Multicache 
 
 	mc.Purge()
 
-	return &mc
+	return &mc, nil
 }
 
 // Adds an item to the cache with the given key

@@ -21,7 +21,7 @@ func CalculateHitMiss(items []string, cacheSize uint64, algorithm ReplacementAlg
 		return 0
 	}
 
-	mc := NewMulticache(cacheSize, algorithm)
+	mc, _ := NewMulticache(cacheSize, algorithm)
 	hits := 0
 	misses := 0
 
