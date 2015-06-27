@@ -11,15 +11,14 @@ Licensed under the MIT license
 /** Given a list of strings, calculates the hit/miss ratio for a given algorithm
 and cache size.
 
-Returns the hit/miss ratio along with Bélády's optimal ratio for the given input
-with a cache of the same size.
+Returns the hit/miss ratio for the given input
 
 To minimize the warmup penalty, make sure the number of items is an order of
 magnitude greater than the cache size.
 **/
-func CalculateHitMiss(items []string, cacheSize uint64, algorithm ReplacementAlgorithm) (ratio float64, perfectRatio float64) {
+func CalculateHitMiss(items []string, cacheSize uint64, algorithm ReplacementAlgorithm) (ratio float64) {
 	if cacheSize <= 0 {
-		return 0, 0
+		return 0
 	}
 
 	mc := NewMultiCache(cacheSize, algorithm)
@@ -38,9 +37,8 @@ func CalculateHitMiss(items []string, cacheSize uint64, algorithm ReplacementAlg
 	}
 
 	algorithmHitMissRatio := float64(hits) / float64(misses+hits)
-	optimal := CalculateOptimalHitMiss(items, cacheSize)
 
-	return algorithmHitMissRatio, optimal
+	return algorithmHitMissRatio
 }
 
 /**

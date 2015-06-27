@@ -6,6 +6,9 @@ keys and replacement algorithms.
 
 Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
 Licensed under the MIT license
+
+This file generates a bunch of tests and compares all algorithms with each other
+and the optimal caching algorithm.
 **/
 
 import (
@@ -16,7 +19,11 @@ import (
 	"strconv"
 )
 
-const CacheSize = 3
+const (
+	CacheSize      = 3
+	TestSize       = 10000
+	UniqueElements = 15
+)
 
 func main() {
 	// Create some random data
@@ -26,8 +33,8 @@ func main() {
 	for repeatChance := 0.0; repeatChance <= 1; repeatChance += .1 {
 		data := []string{}
 
-		for i := 0; i < 10000; i++ {
-			if i > 5 && rand.Float64() < repeatChance {
+		for i := 0; i < TestSize; i++ {
+			if i > CacheSize && rand.Float64() < repeatChance {
 				// Give a chance to recently used values, likely to happen in the
 				// real world
 				index := (rand.Int() % (CacheSize - 1)) + 1
@@ -35,8 +42,8 @@ func main() {
 				data = append(data, chosen)
 
 			} else {
-				// rnadomly change to 1 of 10 items
-				randval := rand.Int() % 10
+				// rnadomly change to 1 of 15 items
+				randval := rand.Int() % UniqueElements
 				data = append(data, strconv.Itoa(randval))
 			}
 		}
@@ -63,7 +70,7 @@ func main() {
 		for _, algname := range algnames {
 			alg := algs[algname]
 
-			amt, _ := multicache.CalculateHitMiss(*data, CacheSize, alg)
+			amt := multicache.CalculateHitMiss(*data, CacheSize, alg)
 
 			// Change everything to percentages
 			amt *= 100
