@@ -8,10 +8,10 @@ Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
 Licensed under the MIT license
 **/
 
-/** MultiCacheItem
+/** MulticacheItem
 
 **/
-type MultiCacheItem struct {
+type MulticacheItem struct {
 	// The tag meaning is defined by the multicache algorithm being used.
 	Tag int32
 	// The set of keys that reference this item.
@@ -21,14 +21,14 @@ type MultiCacheItem struct {
 }
 
 // Resets the cache item to a blank slate
-func (m *MultiCacheItem) reset() {
+func (m *MulticacheItem) reset() {
 	m.Tag = 0
 	m.keys = []string{}
 	m.value = nil
 }
 
 // Resets the cache item without clearing the Tag
-func (m *MultiCacheItem) softReset() {
+func (m *MulticacheItem) softReset() {
 	m.keys = []string{}
 	m.value = nil
 }

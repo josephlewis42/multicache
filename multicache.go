@@ -10,9 +10,9 @@ Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
 Licensed under the MIT license
 **/
 
-type MultiCache struct {
-	kvStore         map[string]*MultiCacheItem
-	itemList        []*MultiCacheItem
+type Multicache struct {
+	kvStore         map[string]*MulticacheItem
+	itemList        []*MulticacheItem
 	cacheSize       uint64
 	replace         ReplacementAlgorithm
 	lock            sync.RWMutex
@@ -21,21 +21,21 @@ type MultiCache struct {
 
 // Creates a new multicache that can hold the given number of items.
 // The default algorithm used is SecondChance
-func NewDefaultMultiCache(numItems uint64) *MultiCache {
+func NewDefaultMulticache(numItems uint64) *Multicache {
 	var defaultAlgorithm SecondChance
-	return NewMultiCache(numItems, &defaultAlgorithm)
+	return NewMulticache(numItems, &defaultAlgorithm)
 }
 
 // Creates a multicache that can hold the given number of items using the given
 // replacement algorithm. You should use CalculateHitMiss to look for the best
 // ReplacementAlgorithm for your specific data.
-func NewMultiCache(numItems uint64, algorithm ReplacementAlgorithm) *MultiCache {
-	var mc MultiCache
-	mc.kvStore = make(map[string]*MultiCacheItem)
-	mc.itemList = make([]*MultiCacheItem, numItems)
+func NewMulticache(numItems uint64, algorithm ReplacementAlgorithm) *Multicache {
+	var mc Multicache
+	mc.kvStore = make(map[string]*MulticacheItem)
+	mc.itemList = make([]*MulticacheItem, numItems)
 
 	for i, _ := range mc.itemList {
-		mc.itemList[i] = new(MultiCacheItem)
+		mc.itemList[i] = new(MulticacheItem)
 	}
 
 	mc.cacheSize = numItems
@@ -48,7 +48,7 @@ func NewMultiCache(numItems uint64, algorithm ReplacementAlgorithm) *MultiCache 
 }
 
 // Adds an item to the cache with the given key
-func (mc *MultiCache) Add(key string, value interface{}) {
+func (mc *Multicache) Add(key string, value interface{}) {
 	mc.lock.Lock()
 	defer mc.lock.Unlock()
 
@@ -60,7 +60,7 @@ func (mc *MultiCache) Add(key string, value interface{}) {
 NOTE: do not include duplicate keys in AddMany e.g. AddMany("foo", "bar", "baz", "bar")
 this will caused undefined results.
 */
-func (mc *MultiCache) AddMany(value interface{}, keys ...string) {
+func (mc *Multicache) AddMany(value interface{}, keys ...string) {
 	mc.lock.Lock()
 	defer mc.lock.Unlock()
 
@@ -68,7 +68,7 @@ func (mc *MultiCache) AddMany(value interface{}, keys ...string) {
 }
 
 // Adds an item to the cache with the given keys
-func (mc *MultiCache) add(value interface{}, keys ...string) {
+func (mc *Multicache) add(value interface{}, keys ...string) {
 	// Do nothing on empty key
 	if len(keys) == 0 {
 		return
@@ -91,7 +91,7 @@ func (mc *MultiCache) add(value interface{}, keys ...string) {
 }
 
 // Fetches an item from the cache
-func (mc *MultiCache) Get(key string) (value interface{}, ok bool) {
+func (mc *Multicache) Get(key string) (value interface{}, ok bool) {
 	// If the caching algorithm updates some state when a get is done
 	// do a normal lock, otherwise do a multiple reader lock for speed.
 	if mc.retrieveUpdates {
@@ -106,7 +106,7 @@ func (mc *MultiCache) Get(key string) (value interface{}, ok bool) {
 }
 
 // This get function does no locking so it can be used elsewhere.
-func (mc *MultiCache) get(key string) (value interface{}, ok bool) {
+func (mc *Multicache) get(key string) (value interface{}, ok bool) {
 	v, ok := mc.kvStore[key]
 	if !ok {
 		return nil, false
@@ -139,7 +139,7 @@ item will be stored in the cache if err is nil. If err is not nil, GetOrFind
 will return a nil item and the error returned by GetOrFindMiss.
 
 **/
-func (mc *MultiCache) GetOrFind(key string, replaceFunc GetOrFindMiss) (item interface{}, err error) {
+func (mc *Multicache) GetOrFind(key string, replaceFunc GetOrFindMiss) (item interface{}, err error) {
 	// Do a full write lock because we don't want a race condition in case we
 	// need to write.
 	mc.lock.Lock()
@@ -163,7 +163,7 @@ func (mc *MultiCache) GetOrFind(key string, replaceFunc GetOrFindMiss) (item int
 }
 
 // Removes an item from the multicache
-func (mc *MultiCache) Remove(key string) {
+func (mc *Multicache) Remove(key string) {
 	mc.lock.Lock()
 	defer mc.lock.Unlock()
 
@@ -174,11 +174,11 @@ func (mc *MultiCache) Remove(key string) {
 }
 
 // Removes all items from the cache.
-func (mc *MultiCache) Purge() {
+func (mc *Multicache) Purge() {
 	mc.lock.Lock()
 	defer mc.lock.Unlock()
 
-	mc.kvStore = make(map[string]*MultiCacheItem)
+	mc.kvStore = make(map[string]*MulticacheItem)
 
 	for _, item := range mc.itemList {
 		item.reset()
@@ -188,7 +188,7 @@ func (mc *MultiCache) Purge() {
 }
 
 // Removes an item from the cache.
-func (mc *MultiCache) removeItem(item *MultiCacheItem) {
+func (mc *Multicache) removeItem(item *MulticacheItem) {
 	// Remove all references to this item.
 	for _, v := range item.keys {
 		delete(mc.kvStore, v)
@@ -198,7 +198,7 @@ func (mc *MultiCache) removeItem(item *MultiCacheItem) {
 }
 
 // Grabs and clears an item to be filled according to the replacement algorithm
-func (mc *MultiCache) getItem() *MultiCacheItem {
+func (mc *Multicache) getItem() *MulticacheItem {
 	item := mc.replace.GetNextReplacement(mc)
 
 	// Remove all references to this item.

@@ -12,16 +12,16 @@ Licensed under the MIT license
 follow.
 
 When implementing a ReplacementAlgorithm DO NOT call any functions of the
-MultiCache or any external functions referencing the multicache. The MultiCache
+Multicache or any external functions referencing the multicache. The Multicache
 uses a multiple reader single writer lock and may deadlock if you do that.
 
-MultiCacheItem provides the field Tag for your use in implementing the
+MulticacheItem provides the field Tag for your use in implementing the
 ReplacementAlgorithm. For example, you could use Tag to store an increasing
 number if you were creating an LRU style replacement.
 **/
 type ReplacementAlgorithm interface {
-	Reset(multicache *MultiCache)
-	GetNextReplacement(multicache *MultiCache) *MultiCacheItem
+	Reset(multicache *Multicache)
+	GetNextReplacement(multicache *Multicache) *MulticacheItem
 	UpdatesOnRetrieved() bool
-	ItemRetrieved(item *MultiCacheItem)
+	ItemRetrieved(item *MulticacheItem)
 }

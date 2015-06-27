@@ -16,16 +16,16 @@ func assert(t *testing.T, assertion bool, errinfo string) {
 	}
 }
 
-func TestNewDefaultMultiCache(t *testing.T) {
-	mc := NewDefaultMultiCache(100)
+func TestNewDefaultMulticache(t *testing.T) {
+	mc := NewDefaultMulticache(100)
 
 	assert(t, mc.cacheSize == 100, "Cache size not set")
 	assert(t, len(mc.kvStore) == 0, "Wrong kvstore size")
 	assert(t, mc.replace != nil, "Algorithm missing")
 }
 
-func TestNewMultiCacheAddGet(t *testing.T) {
-	mc := NewDefaultMultiCache(100)
+func TestNewMulticacheAddGet(t *testing.T) {
+	mc := NewDefaultMulticache(100)
 	_, ok := mc.Get("not there")
 	assert(t, ok == false, "Got non existant item")
 
@@ -71,7 +71,7 @@ func TestNewMultiCacheAddGet(t *testing.T) {
 // will return a nil item and the error returned by GetOrFindMiss.
 //
 // **/
-// func (mc *MultiCache) GetOrFind(key string, replaceFunc GetOrFindMiss) (item interface{}, err error) {
+// func (mc *Multicache) GetOrFind(key string, replaceFunc GetOrFindMiss) (item interface{}, err error) {
 // 	// Do a full write lock because we don't want a race condition in case we
 // 	// need to write.
 // 	c.lock.Lock()
@@ -96,7 +96,7 @@ func TestNewMultiCacheAddGet(t *testing.T) {
 //
 
 func TestGetOrFind(t *testing.T) {
-	mc := NewDefaultMultiCache(100)
+	mc := NewDefaultMulticache(100)
 
 	// Test a missing key being added
 	didAdd := false
@@ -126,8 +126,8 @@ func TestGetOrFind(t *testing.T) {
 
 }
 
-func TestNewMultiCacheRemove(t *testing.T) {
-	mc := NewDefaultMultiCache(100)
+func TestNewMulticacheRemove(t *testing.T) {
+	mc := NewDefaultMulticache(100)
 
 	mc.Add("key", "value")
 	mc.AddMany("value2", "key2-1", "key2-2")
@@ -143,8 +143,8 @@ func TestNewMultiCacheRemove(t *testing.T) {
 	assert(t, ok == false, "Didn't remove all multikey references")
 }
 
-func TestNewMultiCachePurge(t *testing.T) {
-	mc := NewDefaultMultiCache(100)
+func TestNewMulticachePurge(t *testing.T) {
+	mc := NewDefaultMulticache(100)
 
 	// Add and get a single value
 	mc.Add("key", "value")

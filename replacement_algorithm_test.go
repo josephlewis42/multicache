@@ -26,7 +26,7 @@ type ReplacementAlgorithmTestcase struct {
 }
 
 func (rat *ReplacementAlgorithmTestcase) RunTest(t *testing.T) {
-	mc := NewMultiCache(rat.cacheSize, rat.ra)
+	mc := NewMulticache(rat.cacheSize, rat.ra)
 
 	for index, query := range rat.queries {
 		_, found := mc.Get(query)

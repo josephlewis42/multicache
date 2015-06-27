@@ -11,11 +11,12 @@ Licensed under the MIT license
 import (
 	"fmt"
 	"math/rand"
-	"multicache"
 	"runtime"
 	"sort"
 	"strconv"
 	"testing"
+
+	"github.com/josephlewis42/multicache"
 
 	"github.com/dkumor/golang-lru"
 )
@@ -104,7 +105,7 @@ func showResults(algname string, result testing.BenchmarkResult) {
 
 func wrapForBenchmarking(data []string, alg multicache.ReplacementAlgorithm, CacheSize uint64) func(b *testing.B) {
 	return func(b *testing.B) {
-		cache := multicache.NewMultiCache(CacheSize, alg)
+		cache := multicache.NewMulticache(CacheSize, alg)
 		datLen := len(data)
 		var ok bool
 		// run the Fib function b.N times
@@ -120,7 +121,7 @@ func wrapForBenchmarking(data []string, alg multicache.ReplacementAlgorithm, Cac
 
 func wrapForParallelBenchmarking(data []string, alg multicache.ReplacementAlgorithm, CacheSize uint64, Threads int) func(b *testing.B) {
 	return func(b *testing.B) {
-		cache := multicache.NewMultiCache(CacheSize, alg)
+		cache := multicache.NewMulticache(CacheSize, alg)
 		datLen := len(data)
 
 		b.RunParallel(func(pb *testing.PB) {

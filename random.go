@@ -17,10 +17,10 @@ because it does fairly well despite being fast and simple.
 type Random struct {
 }
 
-func (rof *Random) Reset(multicache *MultiCache) {
+func (rof *Random) Reset(multicache *Multicache) {
 }
 
-func (rof *Random) GetNextReplacement(multicache *MultiCache) *MultiCacheItem {
+func (rof *Random) GetNextReplacement(multicache *Multicache) *MulticacheItem {
 	location := uint64(rand.Uint32()) % multicache.cacheSize
 	return multicache.itemList[location]
 }
@@ -29,7 +29,7 @@ func (rof *Random) UpdatesOnRetrieved() bool {
 	return false
 }
 
-func (rof *Random) ItemRetrieved(item *MultiCacheItem) {
+func (rof *Random) ItemRetrieved(item *MulticacheItem) {
 	// Push this item to the head of the queue
 
 }

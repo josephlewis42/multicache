@@ -17,11 +17,11 @@ type RoundRobin struct {
 	position uint64
 }
 
-func (rof *RoundRobin) Reset(multicache *MultiCache) {
+func (rof *RoundRobin) Reset(multicache *Multicache) {
 	rof.position = 0
 }
 
-func (rof *RoundRobin) GetNextReplacement(multicache *MultiCache) *MultiCacheItem {
+func (rof *RoundRobin) GetNextReplacement(multicache *Multicache) *MulticacheItem {
 	rof.position = uint64(rof.position+1) % multicache.cacheSize
 	return multicache.itemList[rof.position]
 }
@@ -30,6 +30,6 @@ func (rof *RoundRobin) UpdatesOnRetrieved() bool {
 	return false
 }
 
-func (rof *RoundRobin) ItemRetrieved(item *MultiCacheItem) {
+func (rof *RoundRobin) ItemRetrieved(item *MulticacheItem) {
 	// We don't update anything here, no need.
 }

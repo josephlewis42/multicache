@@ -23,11 +23,11 @@ type SecondChance struct {
 	position uint64
 }
 
-func (rof *SecondChance) Reset(multicache *MultiCache) {
+func (rof *SecondChance) Reset(multicache *Multicache) {
 	rof.position = 0
 }
 
-func (rof *SecondChance) GetNextReplacement(multicache *MultiCache) *MultiCacheItem {
+func (rof *SecondChance) GetNextReplacement(multicache *Multicache) *MulticacheItem {
 	for {
 		// Increment our position, falling over if necessary
 		rof.position = uint64(rof.position+1) % multicache.cacheSize
@@ -48,7 +48,7 @@ func (rof *SecondChance) UpdatesOnRetrieved() bool {
 	return true
 }
 
-func (rof *SecondChance) ItemRetrieved(item *MultiCacheItem) {
+func (rof *SecondChance) ItemRetrieved(item *MulticacheItem) {
 	// Set a flag representing the item being referenced.
 	item.Tag = 1
 }
