@@ -17,7 +17,7 @@ func assert(t *testing.T, assertion bool, errinfo string) {
 }
 
 func TestNewDefaultMulticache(t *testing.T) {
-	mc := NewDefaultMulticache(100)
+	mc, _ := NewDefaultMulticache(100)
 
 	assert(t, mc.cacheSize == 100, "Cache size not set")
 	assert(t, len(mc.kvStore) == 0, "Wrong kvstore size")
@@ -25,7 +25,7 @@ func TestNewDefaultMulticache(t *testing.T) {
 }
 
 func TestNewMulticacheAddGet(t *testing.T) {
-	mc := NewDefaultMulticache(100)
+	mc, _ := NewDefaultMulticache(100)
 	_, ok := mc.Get("not there")
 	assert(t, ok == false, "Got non existant item")
 
@@ -53,50 +53,8 @@ func TestNewMulticacheAddGet(t *testing.T) {
 	assert(t, val == "value3", "Didn't get correct value")
 }
 
-// /** If GetOrFind misses the cache, this function is called. It should get the
-// item for the given string and return it, the item's keys and optionally an error.
-//
-// If an error is returned, saving the item and keys is skipped and the error is
-// passed on to the caller, otherwise the returned item is passed on and the error
-// will be nil.
-//
-// searchKey is the key that we looked up that didn't exist.
-// **/
-// type GetOrFindMiss func(searchKey string) (item interface{}, keys []string, err error)
-//
-// /** GetOrFind checks to see if the given item is in the cache. If the item is
-// in the cache, it returns the item and a nil error. If the item is not in the
-// cache replaceFunc is called to get the requested item along with its keys; this
-// item will be stored in the cache if err is nil. If err is not nil, GetOrFind
-// will return a nil item and the error returned by GetOrFindMiss.
-//
-// **/
-// func (mc *Multicache) GetOrFind(key string, replaceFunc GetOrFindMiss) (item interface{}, err error) {
-// 	// Do a full write lock because we don't want a race condition in case we
-// 	// need to write.
-// 	c.lock.Lock()
-// 	defer c.lock.Unlock()
-//
-// 	// Try to get the item, on success return it
-// 	item, ok := mc.get(key)
-// 	if ok {
-// 		return item, nil
-// 	}
-//
-// 	// Call replaceFunc to see if it can get the item instead.
-// 	item, keys, err := replaceFunc(key)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	// If replaceFunc was a success, add and return
-// 	add(item, keys...)
-// 	return item, nil
-// }
-//
-
 func TestGetOrFind(t *testing.T) {
-	mc := NewDefaultMulticache(100)
+	mc, _ := NewDefaultMulticache(100)
 
 	// Test a missing key being added
 	didAdd := false
@@ -127,7 +85,7 @@ func TestGetOrFind(t *testing.T) {
 }
 
 func TestNewMulticacheRemove(t *testing.T) {
-	mc := NewDefaultMulticache(100)
+	mc, _ := NewDefaultMulticache(100)
 
 	mc.Add("key", "value")
 	mc.AddMany("value2", "key2-1", "key2-2")
@@ -143,8 +101,48 @@ func TestNewMulticacheRemove(t *testing.T) {
 	assert(t, ok == false, "Didn't remove all multikey references")
 }
 
+func TestNewMulticacheRemoveItemFunc(t *testing.T) {
+	mc, _ := NewDefaultMulticache(100)
+
+	// Set up our items, we're going to remove the items that are equal
+	// to a
+	mc.Add("foo", "a")
+	mc.Add("bar", "a")
+	mc.Add("baz", "a")
+	mc.Add("oof", "b")
+
+	// Remove all items with value a
+	mc.RemoveManyFunc(func(item interface{}) bool {
+		if item.(string) == "a" {
+			return true
+		}
+
+		return false
+	})
+
+	{
+		_, ok := mc.Get("foo")
+		assert(t, ok == false, "Got removed value foo")
+	}
+
+	{
+		_, ok := mc.Get("bar")
+		assert(t, ok == false, "Got removed value bar")
+	}
+
+	{
+		_, ok := mc.Get("baz")
+		assert(t, ok == false, "Got removed value baz")
+	}
+
+	{
+		_, ok := mc.Get("oof")
+		assert(t, ok == true, "Didn't get saved value oof")
+	}
+}
+
 func TestNewMulticachePurge(t *testing.T) {
-	mc := NewDefaultMulticache(100)
+	mc, _ := NewDefaultMulticache(100)
 
 	// Add and get a single value
 	mc.Add("key", "value")

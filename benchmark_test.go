@@ -120,11 +120,12 @@ var hitmissTestcases = []FullTestcase{
 
 func TestCalculateHitMiss(t *testing.T) {
 	for index, test := range hitmissTestcases {
-		result, optimal := CalculateHitMiss(test.items, test.cacheSize, test.algorithm)
+		result := CalculateHitMiss(test.items, test.cacheSize, test.algorithm)
 
 		if result != test.expectedResult {
 			t.Error("Unexpected result, index:", index, "result:", result, "testcase:", test)
 		}
+		optimal := CalculateOptimalHitMiss(test.items, test.cacheSize)
 
 		if optimal != test.expectedOptimal {
 			t.Error("Unexpected result, index:", index, "optimal_result:", optimal, "testcase:", test)

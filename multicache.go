@@ -184,6 +184,26 @@ func (mc *Multicache) Remove(key string) {
 	}
 }
 
+// Iterates through the valid items in the cache, passing them to the removal function.
+// The function returns true if the item is to be removed, or false if it is not.
+func (mc *Multicache) RemoveManyFunc(removeFunc func(item interface{}) (shouldRemove bool)) {
+	mc.lock.Lock()
+	defer mc.lock.Unlock()
+
+	for _, item := range mc.itemList {
+		// Ignore all items that are unreachable
+		if len(item.keys) == 0 {
+			continue
+		}
+
+		shouldRemove := removeFunc(item.value)
+
+		if shouldRemove {
+			mc.removeItem(item)
+		}
+	}
+}
+
 // Removes all items from the cache.
 func (mc *Multicache) Purge() {
 	mc.lock.Lock()
