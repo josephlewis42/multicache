@@ -79,6 +79,12 @@ Creates a new multicache that removes items inserted before expireTimeMs millise
 ago with numItems slots for items.
 **/
 func CreateTimeExpireMulticache(numItems, expireTimeMs uint64) (*Multicache, error) {
-	tc := TimedExpire{float64(expireTimeMs)}
-	return NewMulticache(numItems, &tc)
+	return NewMulticache(numItems, CreateTimeExpireAlgorithm(expireTimeMs))
+}
+
+/**
+Creates a timed expire algorithm.
+**/
+func CreateTimeExpireAlgorithm(expireTimeMs uint64) *TimedExpire {
+	return &TimedExpire{float64(expireTimeMs)}
 }
