@@ -14,9 +14,10 @@ and the optimal caching algorithm.
 import (
 	"fmt"
 	"math/rand"
-	"multicache"
 	"sort"
 	"strconv"
+
+	"github.com/josephlewis42/multicache"
 )
 
 const (

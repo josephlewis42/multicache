@@ -27,7 +27,8 @@ amount of time remaining will be replaced.
 
 **/
 type TimedExpire struct {
-	timeExpireMs float64
+	timeExpireMs  float64
+	currentTimeMs float64
 }
 
 func (this *TimedExpire) Reset(multicache *Multicache) {
@@ -35,14 +36,14 @@ func (this *TimedExpire) Reset(multicache *Multicache) {
 
 func (this *TimedExpire) GetNextReplacement(multicache *Multicache) *MulticacheItem {
 
-	currentTimeMs := float64(time.Now().Nanosecond()) * nsToMs
+	this.currentTimeMs = float64(time.Now().Nanosecond()) * nsToMs
 
 	difference := math.MaxFloat64
 	var smallestItem *MulticacheItem
 
 	for _, item := range multicache.itemList {
 		itemTime := float64(item.Tag)
-		timeDelta := currentTimeMs - itemTime
+		timeDelta := this.currentTimeMs - itemTime
 
 		// short circuit the rest of the items.
 		if timeDelta <= this.timeExpireMs {
@@ -65,9 +66,9 @@ func (this *TimedExpire) UpdatesOnRetrieved() bool {
 func (this *TimedExpire) ItemRetrieved(item *MulticacheItem) bool {
 	// Make sure the item is still valid.
 
-	currentTimeMs := float64(time.Now().Nanosecond()) * nsToMs
+	this.currentTimeMs = float64(time.Now().Nanosecond()) * nsToMs
 	itemTime := float64(item.Tag)
-	timeDelta := currentTimeMs - itemTime
+	timeDelta := this.currentTimeMs - itemTime
 
 	isValid := timeDelta >= this.timeExpireMs
 

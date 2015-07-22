@@ -65,7 +65,8 @@ func main() {
 	algs := map[string]multicache.ReplacementAlgorithm{"Round Robin": &multicache.RoundRobin{},
 		"LRU":           &multicache.LeastRecentlyUsed{},
 		"Random":        &multicache.Random{},
-		"Second Chance": &multicache.SecondChance{}}
+		"Second Chance": &multicache.SecondChance{},
+		"Timed Cache":   multicache.CreateTimeExpireAlgorithm(1000)}
 
 	algnames := getSortedKeys(algs)
 
@@ -105,7 +106,7 @@ func showResults(algname string, result testing.BenchmarkResult) {
 
 func wrapForBenchmarking(data []string, alg multicache.ReplacementAlgorithm, CacheSize uint64) func(b *testing.B) {
 	return func(b *testing.B) {
-		cache := multicache.NewMulticache(CacheSize, alg)
+		cache, _ := multicache.NewMulticache(CacheSize, alg)
 		datLen := len(data)
 		var ok bool
 		// run the Fib function b.N times
@@ -121,7 +122,7 @@ func wrapForBenchmarking(data []string, alg multicache.ReplacementAlgorithm, Cac
 
 func wrapForParallelBenchmarking(data []string, alg multicache.ReplacementAlgorithm, CacheSize uint64, Threads int) func(b *testing.B) {
 	return func(b *testing.B) {
-		cache := multicache.NewMulticache(CacheSize, alg)
+		cache, _ := multicache.NewMulticache(CacheSize, alg)
 		datLen := len(data)
 
 		b.RunParallel(func(pb *testing.PB) {
