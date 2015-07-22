@@ -3,7 +3,7 @@ package multicache
 import "math/rand"
 
 /**
-This file is part of go-multicache, a library for handling caches with multiple
+This file is part of multicache, a library for handling caches with multiple
 keys and replacement algorithms.
 
 Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
@@ -29,7 +29,7 @@ func (rof *Random) UpdatesOnRetrieved() bool {
 	return false
 }
 
-func (rof *Random) ItemRetrieved(item *MulticacheItem) {
+func (rof *Random) ItemRetrieved(item *MulticacheItem) bool {
 	// Push this item to the head of the queue
-
+	return true
 }

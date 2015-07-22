@@ -6,7 +6,7 @@ import (
 )
 
 /**
-This file is part of go-multicache, a library for handling caches with multiple
+This file is part of multicache, a library for handling caches with multiple
 keys and replacement algorithms.
 
 Copyright 2015 Joseph Lewis <joseph@josephlewis.net>
@@ -123,7 +123,10 @@ func (mc *Multicache) get(key string) (value interface{}, ok bool) {
 		return nil, false
 	}
 
-	mc.replace.ItemRetrieved(v)
+	ok = mc.replace.ItemRetrieved(v)
+	if !ok {
+		return nil, false
+	}
 
 	return v.value, true
 }
