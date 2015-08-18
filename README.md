@@ -13,10 +13,10 @@ Features
 	* Round Robin
 	* Random Replace
 	* Second Chance
-* Easily benchmark your application's access patterns to find the optimal configuration.
+* Easily benchmark your application's access patterns to find the optimal configuration
 * Custom replacement algorithms supported
 * Very fast (see benchmarks below)
-* We welcome pull and feature requests!
+* Pull and feature requests are welcome!
 
 What makes it fast?
 -------------------
@@ -25,7 +25,7 @@ What makes it fast?
 * No dynamic memory allocation (except your keys and values)
 * Cache elements are stored in an array so they are paged together and fit in an L2/L3 cache (unlike linked lists)
 * Algorithms use basic comparisons and integer math
-* Few (if any) external API calls
+* Few (if any) external API calls depending on the caching algorithm
 
 Examples
 --------
@@ -78,14 +78,7 @@ Benchmarks
 Speed
 -----
 
-You can play around with the benchmark params in examples/speedtest/speedtest.go
-to fit your exact system.
-
-These results are for a cache that holds 20% of the dataset, averaged over 10000
-trials, with 80% chance that one of the items in the current cache is going to
-be accessed again in the next `Get()`--this simulates an access pattern where
-you're working with an item over and over before switching to a different one,
-like users logged into a system.
+All benchmarks are BS; therefore you can modify the parameters in `examples/speedtest/speedtest.go` to fit your exact system.
 
 Results (sorted for ops/sec):
 
@@ -100,8 +93,13 @@ Results (sorted for ops/sec):
 
 * *NONE* is a cache that hits every time.
 * *golang-lru* is an external lru cache for comparison with this system.
-* *Timed Cache* checks the time of each element coming out and nixes it if
-it is old; this causes many calls to `time()` which slows it considerably.
+* *Timed Cache* checks the time of each element coming out and nixes it if it is old; this causes many calls to `time()` which slows it considerably.
+
+
+Results are for a cache that holds 20% of the data, averaged over 10,000
+trials, with 80% chance that one of the items in the current cache is going to
+be accessed again in the next `Get()` similar to what users would do if they were logged into the system.
+
 
 Optimality
 ----------
@@ -120,4 +118,4 @@ perform "in the wild". By default, they'll run through various repeat chances
 	Round Robin     75.82000   92.91667
 	Second Chance   76.24000   93.43137
 
-The optimality metric is based on Bélády's optimal ratio.
+The optimality metric is based on Bélády's optimal ratio i.e. the optimal thing to dump from a cache is the one being used farthest from now.
