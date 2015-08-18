@@ -1,11 +1,75 @@
 multicache
 ===========
 
-A go caching library that supports multiple keys and various replacement algorithms.
+A speedy go caching library that supports multiple keys and various replacement algorithms.
 
-Exapmles
-========
+Features
+--------
 
+* Support for caching items with multiple keys
+* Lots of common out of the box algorithms
+	* LRU
+	* Time Expiration
+	* Round Robin
+	* Random Replace
+	* Second Chance
+* Easily benchmark your application's access patterns to find the optimal configuration.
+* Custom replacement algorithms supported
+* Very fast (see benchmarks below)
+* We welcome pull and feature requests!
+
+What makes it fast?
+-------------------
+
+* String keys make for fast comparisons
+* No dynamic memory allocation (except your keys and values)
+* Cache elements are stored in an array so they are paged together and fit in an L2/L3 cache (unlike linked lists)
+* Algorithms use basic comparisons and integer math
+* Few (if any) external API calls
+
+Examples
+--------
+
+Examples can be found in the `examples` directory, this is `basic_example.go`.
+
+	package main
+
+	import (
+		"fmt"
+		"github.com/josephlewis42/multicache"
+	)
+
+	func main() {
+		// creates a cache that can hold 10 values
+		cache, _ := multicache.NewDefaultMulticache(10)
+
+		// Nothing yet in cache
+		value, ok := cache.Get("foo")
+		fmt.Printf("%v %v\n", value, ok) // <nil> false
+
+		// Add a key value pair
+		cache.Add("foo", 42)
+		value, ok = cache.Get("foo")
+		fmt.Printf("%v %v\n", value, ok) // 42 true
+
+		// Add a multiple key-value pair, note that the value goes first.
+		cache.AddMany(44.009, "bar", "baz")
+		value, ok = cache.Get("bar")
+		fmt.Printf("%v %v\n", value, ok) // 44.009 true
+
+		// Delete one key and all of the "multikeys" get removed
+		cache.Remove("baz")
+		value, ok = cache.Get("bar")
+		fmt.Printf("%v %v\n", value, ok) // <nil> false
+
+		// Create a multicache with your desired replacement algorithm
+		// (you can even make your own)
+		multicache.NewMulticache(10, &multicache.SecondChance{})
+
+		// We even have time expiring caches, items expire after the given number
+		// of milliseconds. (10 items, 1000ms)
+		multicache.CreateTimeExpireMulticache(10, 1000)
+	}
 
 
 Benchmarks
@@ -35,9 +99,7 @@ Results (sorted for ops/sec):
 		Timed Cache     Allocated: 62517 kB Operations/Second: 1081585
 
 * *NONE* is a cache that hits every time.
-* *golang-lru* is an external lru cache for comparison with this system. We use
-a static number of pre-allocated elements so the overhead of malloc()s is
-greatly reduced.
+* *golang-lru* is an external lru cache for comparison with this system.
 * *Timed Cache* checks the time of each element coming out and nixes it if
 it is old; this causes many calls to `time()` which slows it considerably.
 
