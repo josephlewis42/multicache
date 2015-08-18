@@ -7,7 +7,7 @@ Features
 --------
 
 * Support for caching items with multiple keys
-* Lots of common out of the box algorithms
+* Lots of common out of the box replacement algorithms
 	* LRU
 	* Time Expiration
 	* Round Robin
@@ -30,7 +30,7 @@ What makes it fast?
 Examples
 --------
 
-Examples can be found in the `examples` directory, this is `basic_example.go`.
+Bare minimal example:
 
 	package main
 
@@ -43,17 +43,12 @@ Examples can be found in the `examples` directory, this is `basic_example.go`.
 		// creates a cache that can hold 10 values
 		cache, _ := multicache.NewDefaultMulticache(10)
 
-		// Nothing yet in cache
-		value, ok := cache.Get("foo")
-		fmt.Printf("%v %v\n", value, ok) // <nil> false
+		cache.Add("foo", 42)                // Add a key value pair
+		cache.AddMany(44.009, "bar", "baz") // one value for many keys (value first)
 
-		// Add a key value pair
-		cache.Add("foo", 42)
-		value, ok = cache.Get("foo")
+		value, ok := cache.Get("foo")
 		fmt.Printf("%v %v\n", value, ok) // 42 true
 
-		// Add a multiple key-value pair, note that the value goes first.
-		cache.AddMany(44.009, "bar", "baz")
 		value, ok = cache.Get("bar")
 		fmt.Printf("%v %v\n", value, ok) // 44.009 true
 
@@ -61,16 +56,14 @@ Examples can be found in the `examples` directory, this is `basic_example.go`.
 		cache.Remove("baz")
 		value, ok = cache.Get("bar")
 		fmt.Printf("%v %v\n", value, ok) // <nil> false
-
-		// Create a multicache with your desired replacement algorithm
-		// (you can even make your own)
-		multicache.NewMulticache(10, &multicache.SecondChance{})
-
-		// We even have time expiring caches, items expire after the given number
-		// of milliseconds. (10 items, 1000ms)
-		multicache.CreateTimeExpireMulticache(10, 1000)
 	}
 
+Other cool features are described in the `examples` directory such as:
+
+* custom removal of elements
+* function callbacks to fill in data when there is a cache miss
+* creating caches with other replacement algorithms
+* creating a time expiring cache
 
 Benchmarks
 ==========
