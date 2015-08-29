@@ -1,6 +1,8 @@
 multicache
 ===========
 
+[![GoDoc](http://godoc.org/github.com/josephlewis42/multicache?status.svg)](http://godoc.org/github.com/josephlewis42/multicache)
+
 A speedy go caching library that supports multiple keys and various replacement algorithms.
 
 Features
