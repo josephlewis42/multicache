@@ -16,11 +16,14 @@ var timedExpireTestCases = []ReplacementAlgorithmTestcase{
 	// Hit all items because they don't expire
 	{&TimedExpire{100}, 2, []string{"a", "a", "a", "b", "b"}, []bool{false, true, true, false, true}, 1},
 	// Overwrite the first element and try it again
-	{&TimedExpire{5}, 2, []string{"a", "b", "c", "a", "b"}, []bool{false, false, false, false, true}, 1}}
+	{&TimedExpire{100}, 2, []string{"a", "b", "c", "a", "c"}, []bool{false, false, false, false, true}, 1},
+	// Miss the item when expired
+	{&TimedExpire{250}, 10, []string{"a", "a", "a", "a", "a"}, []bool{false, true, true, false, true}, 100},
+}
 
 func TestTimedExpire(t *testing.T) {
 
-	for _, testcase := range roundRobinTestCases {
+	for _, testcase := range timedExpireTestCases {
 		testcase.RunTest(t)
 	}
 }

@@ -17,6 +17,8 @@ type RoundRobin struct {
 	position uint64
 }
 
+func (rof *RoundRobin) InitItem(item *MulticacheItem) {}
+
 func (rof *RoundRobin) Reset(multicache *Multicache) {
 	rof.position = 0
 }

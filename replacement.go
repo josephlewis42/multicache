@@ -20,6 +20,8 @@ ReplacementAlgorithm. For example, you could use Tag to store an increasing
 number if you were creating an LRU style replacement.
 **/
 type ReplacementAlgorithm interface {
+	// Initialize the item
+	InitItem(*MulticacheItem)
 	// Resets the items in the multicache
 	Reset(multicache *Multicache)
 	// Gets the next item to replace

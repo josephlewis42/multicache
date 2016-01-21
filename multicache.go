@@ -238,5 +238,6 @@ func (mc *Multicache) getItem() *MulticacheItem {
 	// Remove all references to this item.
 	mc.removeItem(item)
 
+	mc.replace.InitItem(item)
 	return item
 }
