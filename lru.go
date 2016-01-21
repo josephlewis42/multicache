@@ -22,8 +22,10 @@ sequential scan should not and *should* be taken care of by the processor
 automatically prefetching the next page before it is needed.
 **/
 type LeastRecentlyUsed struct {
-	counter int32
+	counter int64
 }
+
+func (rof *LeastRecentlyUsed) InitItem(item *MulticacheItem) {}
 
 func (rof *LeastRecentlyUsed) Reset(multicache *Multicache) {
 	rof.counter = 0

@@ -23,6 +23,8 @@ type SecondChance struct {
 	position uint64
 }
 
+func (rof *SecondChance) InitItem(item *MulticacheItem) {}
+
 func (rof *SecondChance) Reset(multicache *Multicache) {
 	rof.position = 0
 }

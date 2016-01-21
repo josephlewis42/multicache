@@ -13,7 +13,7 @@ Licensed under the MIT license
 **/
 type MulticacheItem struct {
 	// The tag meaning is defined by the multicache algorithm being used.
-	Tag int32
+	Tag int64
 	// The set of keys that reference this item.
 	keys []string
 	// The actual item stored in this item.
